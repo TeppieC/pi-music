@@ -2,6 +2,7 @@ import sys, pygame, random
 import asset
 from pygame import Surface
 from pygame import time
+
 pygame.init()
 pygame.font.init()
 FONT_SIZE = 30
@@ -19,29 +20,41 @@ class GUI(pygame.Surface):
 		self.screen = pygame.display.set_mode(screen_size_tuple, 0, 0)
 		pygame.display.set_caption("Music")
 
-		self._width = screen_size_tuple[0]
-		self._height = screen_size_tuple[1]
+		self._width = screen_size_tuple[0] #480
+		self._height = screen_size_tuple[1] #320
+		print(self._height, self._width)
 		
 		self._rect_screen = screen_size_tuple # size of the window
 		self._rect_caption = pygame.Rect(0, 0, self._width, self._height/4)
 		self._rect_controls = pygame.Rect(0, self._height/4, self._width, (self._height*3)/4)
+
 		self._rect_rollback = pygame.Rect(0, self._height/4, self._width/4, (self._height*3)/4)
+
 		self._rect_center = pygame.Rect(self._width/4, self._height/4, self._width/2, (self._height*3)/4)
 		self._rect_vol_up = pygame.Rect(self._width/4, self._height/4, self._width/2, self._height/4)
 		self._rect_pause = pygame.Rect(self._width/4, self._height/2, self._width/2, self._height/4)
 		self._rect_vol_down = pygame.Rect(self._width/4, (self._height*3)/4, self._width/2, self._height/4)
+		
 		self._rect_forward = pygame.Rect((self._width*3)/4, self._height/4, self._width/4, (self._height*3)/4)
 		self.music_list = self.music_setup(path)
 		self.current_song_index = 0
-		pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
-		pygame.mixer.music.play(-1, 0.0)
+		
+		self.screen.fill((122,122,122), self._rect_rollback)
+
+		print("songs/%s"%self.music_list[self.current_song_index])
+		#pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
+
+		#pygame.mixer.music.play(-1, 0.0)
+		#while pygame.mixer.music.get_busy(): 
+		#	pygame.time.Clock().tick(10)
 
 		print(self._rect_rollback)
 		print(self._rect_center)
 		print(self._rect_forward)
-		self.load_image(self._rect_rollback, "rollback.png")
-		self.load_image(self._rect_center, "start.png")
-		self.load_image(self._rect_forward, "forward.png")
+		self.load_image(self._rect_rollback, "rollback1.png")
+		self.load_image(self._rect_center, "start1.png")
+		self.load_image(self._rect_forward, "forward1.png")
+
 
 	def music_setup(self, path):
 		songs = []
@@ -89,30 +102,21 @@ class GUI(pygame.Surface):
 		if image_load == None:
 			raise ValueError("No such file")
 
-		self.screen.blit(image_load, (x, y, 0, 0)) 
+		self.screen.blit(image_load, (x-25, y-25, 0, 0)) 
 
 
-	def display_score_board(self):
+	def display_current_playing(self):
 		'''
 		Displaying the score board while running the game
 		'''
 		text_surface = FONT.render(
-			"SCORE: "+ str(self.score),
+			str(self.music_list[self.current_song_index]),
 			True,
 			pygame.Color("white"),
 			pygame.Color("black"))
-		self.screen.fill(pygame.Color("black"), self._rect_score_board)
-		self.screen.blit(text_surface, self._rect_score_board)
+		self.screen.fill(pygame.Color("black"), self._rect_caption)
+		self.screen.blit(text_surface, self._rect_caption)
 
-
-		if self.hint_left_side_tiles(pic, num):
-			return True
-		if self.hint_right_side_tiles(pic, num):
-			return True
-		if self.hint_top_side_tiles(pic, num):
-			return True
-		if self.hint_bottom_side_tiles(pic, num):
-			return True
 	
 	def on_click(self, x, y):
 		'''

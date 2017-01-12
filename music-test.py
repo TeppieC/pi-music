@@ -25,6 +25,7 @@ def main():
 
 		# update the surface and all objects
 		pygame.display.update()
+		surface.display_current_playing()
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
