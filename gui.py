@@ -17,7 +17,8 @@ class GUI(pygame.Surface):
 	def __init__(self, screen_size_tuple, path):
 
 		pygame.Surface.__init__(self, size = screen_size_tuple)
-		self.screen = pygame.display.set_mode(screen_size_tuple, pygame.FULLSCREEN)
+		#self.screen = pygame.display.set_mode(screen_size_tuple, pygame.FULLSCREEN)
+		self.screen = pygame.display.set_mode(screen_size_tuple, 0,0)
 		pygame.display.set_caption("Music")
 
 		self._width = screen_size_tuple[0] #480
@@ -26,15 +27,17 @@ class GUI(pygame.Surface):
 		print(self._height, self._width)
 		
 		self._rect_screen = screen_size_tuple # size of the window
-		self._rect_caption = pygame.Rect(0, 0, self._width, self._height/4)
+		self._rect_menu = pygame.Rect(0, 0, self._width/4, self._height/4)
+		self._rect_caption = pygame.Rect(self._width/4, 0, self._width/2, self._height/4)
+		self._rect_mode = pygame.Rect((self._width*3)/4, 0, self._width/4, self._height/4)
 		self._rect_controls = pygame.Rect(0, self._height/4, self._width, (self._height*3)/4)
 
 		self._rect_rollback = pygame.Rect(0, self._height/4, self._width/4, (self._height*3)/4)
 
 		self._rect_center = pygame.Rect(self._width/4, self._height/4, self._width/2, (self._height*3)/4)
-		self._rect_vol_up = pygame.Rect(self._width/4, self._height/4, self._width/2, self._height/4)
-		self._rect_pause = pygame.Rect(self._width/4, self._height/2, self._width/2, self._height/4)
-		self._rect_vol_down = pygame.Rect(self._width/4, (self._height*3)/4, self._width/2, self._height/4)
+		self._rect_vol_up = pygame.Rect(self._width/4, self._height/4, self._width/2-3, (self._height*3)/16)
+		self._rect_pause = pygame.Rect(self._width/4, (self._height*7)/16, self._width/2, (self._height*3)/8)
+		self._rect_vol_down = pygame.Rect(self._width/4, (self._height*13)/16, self._width/2-3, (self._height*3)/16)
 		
 		self._rect_forward = pygame.Rect((self._width*3)/4, self._height/4, self._width/4, (self._height*3)/4)
 		self.music_list = self.music_setup(path)
@@ -42,6 +45,8 @@ class GUI(pygame.Surface):
 		
 		self.screen.fill((122,122,122), self._rect_rollback)
 		self.screen.fill((122,122,122), self._rect_forward)
+		self.screen.fill((122,122,122), self._rect_vol_down)
+		self.screen.fill((122,122,122), self._rect_vol_up)
 
 		print("songs/%s"%self.music_list[self.current_song_index])
 		pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
@@ -50,11 +55,16 @@ class GUI(pygame.Surface):
 		#while pygame.mixer.music.get_busy(): 
 		#	pygame.time.Clock().tick(10)
 
+		print(self._rect_menu)
+		print(self._rect_caption)
+		print(self._rect_mode)
 		print(self._rect_rollback)
-		print(self._rect_center)
+		print(self._rect_pause)
 		print(self._rect_forward)
 		self.load_image(self._rect_rollback, "rollback1.png")
-		self.load_image(self._rect_center, "start1.png")
+		self.load_image(self._rect_mode, "one.png")
+		self.load_image(self._rect_menu, "menu.png")
+		self.load_image(self._rect_pause, "pause1.png")
 		self.load_image(self._rect_forward, "forward1.png")
 
 
@@ -142,18 +152,18 @@ class GUI(pygame.Surface):
 			print("songs/%s"%self.music_list[self.current_song_index])
 			pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
 			pygame.mixer.music.play(-1, 0.0)
-		elif self.is_in_rect(x, y, self._rect_center):
+		elif self.is_in_rect(x, y, self._rect_pause):
 			if self.play_status == 'playing':
 				print(self.play_status)
 				pygame.mixer.music.pause()
-				self.screen.fill((0,0,0), self._rect_center)
-				self.load_image(self._rect_center, "pause1.png")
+				self.screen.fill((0,0,0), self._rect_pause)
+				self.load_image(self._rect_center, "start1.png")
 				self.play_status = 'paused'
 			else:
 				print(self.play_status)
 				pygame.mixer.music.unpause()
-				self.screen.fill((0,0,0), self._rect_center)
-				self.load_image(self._rect_center, "start1.png")
+				self.screen.fill((0,0,0), self._rect_pause)
+				self.load_image(self._rect_center, "pause1.png")
 				self.play_status = 'playing'
 		elif self.is_in_rect(x, y, self._rect_forward):
 			if self.current_song_index==len(self.music_list)-1:
