@@ -17,7 +17,7 @@ class GUI(pygame.Surface):
 	def __init__(self, screen_size_tuple, path):
 
 		pygame.Surface.__init__(self, size = screen_size_tuple)
-		self.screen = pygame.display.set_mode(screen_size_tuple, 0, 0)
+		self.screen = pygame.display.set_mode(screen_size_tuple, pygame.FULLSCREEN)
 		pygame.display.set_caption("Music")
 
 		self._width = screen_size_tuple[0] #480

@@ -11,11 +11,6 @@ from gui import GUI
 SCREEN_SIZE = (480,320)
 LOCAL_PATH = "song_list.txt"
 pygame.init()
-'''
-pygame.mixer.init()
-pygame.mixer.music.load("songs/classical_music.mp3")
-pygame.mixer.music.play(1, 0.0)
-'''
 
 def main():
 	# add background music to the game
