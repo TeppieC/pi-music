@@ -23,10 +23,9 @@ class GUI(pygame.Surface):
 
 		self._width = screen_size_tuple[0] #480
 		self._height = screen_size_tuple[1] #320
-		self.play_status = 'playing'
 		print(self._height, self._width)
 		
-		self._rect_screen = screen_size_tuple # size of the window
+		self._rect_screen = pygame.Rect(0, 0, self._width, self._height) # size of the window
 		self._rect_menu = pygame.Rect(0, 0, self._width/4, self._height/4)
 		self._rect_caption = pygame.Rect(self._width/4, 0, self._width/2, self._height/4)
 		self._rect_mode = pygame.Rect((self._width*3)/4, 0, self._width/4, self._height/4)
@@ -35,23 +34,28 @@ class GUI(pygame.Surface):
 		self._rect_rollback = pygame.Rect(0, self._height/4, self._width/4, (self._height*3)/4)
 
 		self._rect_center = pygame.Rect(self._width/4, self._height/4, self._width/2, (self._height*3)/4)
-		self._rect_vol_up = pygame.Rect(self._width/4, self._height/4, self._width/2-3, (self._height*3)/16)
+		self._rect_vol_up = pygame.Rect(self._width/4, self._height/4, self._width/2, (self._height*3)/16)
 		self._rect_pause = pygame.Rect(self._width/4, (self._height*7)/16, self._width/2, (self._height*3)/8)
-		self._rect_vol_down = pygame.Rect(self._width/4, (self._height*13)/16, self._width/2-3, (self._height*3)/16)
-		
+		self._rect_vol_down = pygame.Rect(self._width/4, (self._height*13)/16, self._width/2, (self._height*3)/16)
 		self._rect_forward = pygame.Rect((self._width*3)/4, self._height/4, self._width/4, (self._height*3)/4)
+
+		self.init_player(path)
+
+
+	def init_player(self, path):		
+		self.play_status = 'playing'
+		self.play_mode = -1
 		self.music_list = self.music_setup(path)
 		self.current_song_index = 0
-		
-		self.screen.fill((122,122,122), self._rect_rollback)
-		self.screen.fill((122,122,122), self._rect_forward)
-		self.screen.fill((122,122,122), self._rect_vol_down)
-		self.screen.fill((122,122,122), self._rect_vol_up)
+		#self.screen.fill((122,122,122), self._rect_rollback)
+		#self.screen.fill((122,122,122), self._rect_forward)
+		#self.screen.fill((122,122,122), self._rect_vol_down)
+		#self.screen.fill((122,122,122), self._rect_vol_up)
 
 		print("songs/%s"%self.music_list[self.current_song_index])
 		pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
 
-		pygame.mixer.music.play(-1, 0.0)
+		pygame.mixer.music.play(self.play_mode, 0.0)
 		#while pygame.mixer.music.get_busy(): 
 		#	pygame.time.Clock().tick(10)
 
@@ -66,7 +70,17 @@ class GUI(pygame.Surface):
 		self.load_image(self._rect_menu, "menu.png")
 		self.load_image(self._rect_pause, "pause1.png")
 		self.load_image(self._rect_forward, "forward1.png")
-
+		self.blit_text('VOL +', self._rect_vol_up)
+		self.blit_text('VOL -', self._rect_vol_down)
+	
+	def blit_text(self, text, rect):
+		text_surface = FONT.render(
+			text,
+			True,
+			pygame.Color("white"),
+			pygame.Color("black"))
+		self.screen.fill(pygame.Color("black"), rect)
+		self.screen.blit(text_surface, rect)
 
 	def music_setup(self, path):
 		songs = []
@@ -78,7 +92,6 @@ class GUI(pygame.Surface):
 		print(output)
 		return output
 
-	
 	def is_in_rect(self, x, y, rect):
 		'''
 		Check and return whether given position(x, y)
@@ -97,6 +110,12 @@ class GUI(pygame.Surface):
 		if x>=rect[0] and x<rect[0]+rect[2]\
 				and y>=rect[1] and y<rect[1]+rect[3]:
 			return True
+
+	def fill_rect_color(self, rect, color):
+		self.screen.fill(color, rect)
+
+	def clear_rect(self, rect):
+		self.fill_rect_color((255,255,255), rect)
 
 	def load_image(self, rect, img_path):
 		'''
@@ -151,7 +170,7 @@ class GUI(pygame.Surface):
 
 			print("songs/%s"%self.music_list[self.current_song_index])
 			pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
-			pygame.mixer.music.play(-1, 0.0)
+			pygame.mixer.music.play(self.play_mode, 0.0)
 		elif self.is_in_rect(x, y, self._rect_pause):
 			if self.play_status == 'playing':
 				print(self.play_status)
@@ -175,7 +194,14 @@ class GUI(pygame.Surface):
 
 			print("songs/%s"%self.music_list[self.current_song_index])
 			pygame.mixer.music.load("songs/%s"%self.music_list[self.current_song_index])
-			pygame.mixer.music.play(-1, 0.0)
+			pygame.mixer.music.play(self.play_mode, 0.0)
+		elif self.is_in_rect(x, y, self._rect_mode):
+			if self.play_mode == -1:
+				self.play_mode = 1
+			elif self.play_mode == 1:
+				self.play_mode = -1
+		elif self.is_in_rect(x,y, self._rect_menu):
+			pass
 		else:
 			pass
 		
